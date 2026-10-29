@@ -1,0 +1,20 @@
+
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "pdf-invoice-bridge",
+    "main": "src/index.js",
+    "compatibility_date": "2026-10-29",
+    "vars": {
+      "MCP_SERVER_URL": "https://pdf-invoice-bridge.thuandinhdev.workers.dev/mcp",
+      "AUTH_SERVER_URL": "https://pdf-invoice-oauth.thuandinhdev.workers.dev",
+      "APPS_SCRIPT_URL": "https://script.google.com/macros/s/AKfycbwvSmc3yrjGhLAsRzWY926FhMoHKUN2HdHBkXcKKCAX66jUDHsNSuaRpo2h-8i45Hvs/exec"
+    },
+    "services": [
+      {
+        "binding": "AUTH_SERVER",
+        "service": "pdf-invoice-oauth",
+        "entrypoint": "PdfInvoiceOAuth"
+      }
+    ]
+  }
+  
