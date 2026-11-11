@@ -5,13 +5,10 @@ import {
   
   const TOOL_NAMES = [
     "health",
-    "summary",
-    "invoices",
-    "items",
-    "warnings",
     "tax_report",
+    "validate_tax_report",
     "generate_tax_declaration",
-    "export_vat_xlsx",
+    "export_vat_xlsx"
   ];
   
   const DATE_FILTER_PROPERTIES = {
