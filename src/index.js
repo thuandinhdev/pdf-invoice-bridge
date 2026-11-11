@@ -9,6 +9,9 @@ import {
     "invoices",
     "items",
     "warnings",
+    "tax_report",
+    "generate_tax_declaration",
+    "export_vat_xlsx",
   ];
   
   const DATE_FILTER_PROPERTIES = {
@@ -76,6 +79,54 @@ import {
         additionalProperties: false,
       },
     },
+    {
+        name: "tax_report",
+        description:
+          "Lấy báo cáo thuế GTGT theo kỳ tháng, quý hoặc năm. Trả số liệu và trạng thái kiểm tra.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            period: {
+              type: "string",
+              description: "Kỳ báo cáo: 2026-Q3, 2026-Q2 hoặc 2026.",
+            },
+          },
+          required: ["period"],
+          additionalProperties: false,
+        },
+      },
+      {
+        name: "generate_tax_declaration",
+        description:
+          "Tạo dữ liệu tờ khai VAT theo mẫu hiện tại của người dùng. Không tự thay đổi mapping.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            period: {
+              type: "string",
+              description: "Kỳ khai thuế, ví dụ 2026-Q3.",
+            },
+          },
+          required: ["period"],
+          additionalProperties: false,
+        },
+      },
+      {
+        name: "export_vat_xlsx",
+        description:
+          "Xuất báo cáo hoặc tờ khai VAT Excel lên Google Drive. Trả về URL tải file XLSX.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            period: {
+              type: "string",
+              description: "Kỳ xuất báo cáo, ví dụ 2026-Q3.",
+            },
+          },
+          required: ["period"],
+          additionalProperties: false,
+        },
+      },
   ];
   
   function jsonResponse(body, status = 200, extraHeaders = {}) {
@@ -160,6 +211,25 @@ import {
     if (name === "health") {
       return args;
     }
+
+    const PERIOD_TOOLS = [
+        "tax_report",
+        "generate_tax_declaration",
+        "export_vat_xlsx",
+      ];
+      
+      if (PERIOD_TOOLS.includes(name)) {
+        if (
+          typeof args.period !== "string" ||
+          !/^\d{4}-(Q[1-4]|0[1-9]|1[0-2])$|^\d{4}$/.test(args.period)
+        ) {
+          throw new Error(
+            "period không hợp lệ. Ví dụ: 2026-Q3, 2026-09 hoặc 2026."
+          );
+        }
+      
+        return args;
+      }
   
     const hasYear = args.year !== undefined;
     const hasFrom = args.date_from !== undefined;
@@ -275,6 +345,18 @@ import {
   
     if (name === "health") {
       return callInvoiceApi(env, name, {});
+    }
+  
+    const PERIOD_TOOLS = [
+      "tax_report",
+      "generate_tax_declaration",
+      "export_vat_xlsx",
+    ];
+  
+    if (PERIOD_TOOLS.includes(name)) {
+      return callInvoiceApi(env, name, {
+        period: args.period,
+      });
     }
   
     let params = {};
@@ -455,4 +537,3 @@ import {
   });
   
   export default resourceServer;
-  
